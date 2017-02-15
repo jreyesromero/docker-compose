@@ -1,35 +1,53 @@
 version: '2'
 services:
-    personal_data-app:
-        image: jreyesromero/personal_data
+    mygateway-app:
+        image: mygateway
         external_links:
-            - data-mysql:mysql
+            - mygateway-mysql:mysql
         environment:
             - SPRING_PROFILES_ACTIVE=prod,swagger
-            - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/personal_data?useUnicode=true&characterEncoding=utf8&useSSL=false
-            - JHIPSTER_SLEEP=10
-            - JHIPSTER_REGISTRY_PASSWORD=undefined
+            - SPRING_CLOUD_CONSUL_HOST=consul
+            - SPRING_CLOUD_CONSUL_PORT=8500
+            - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/mygateway?useUnicode=true&characterEncoding=utf8&useSSL=false
+            - SPRING_DATA_CASSANDRA_CONTACTPOINTS=cassandra
+            - JHIPSTER_SLEEP=30
         ports:
-            - 8080:8080
-    student_info-app:
-        image: jreyesromero/student_info
-        external_links:
-            - data-mysql:mysql
-        environment:
-            - SPRING_PROFILES_ACTIVE=prod,swagger
-            - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/student_info?useUnicode=true&characterEncoding=utf8&useSSL=false
-            - JHIPSTER_SLEEP=10
-            - JHIPSTER_REGISTRY_PASSWORD=undefined
-        ports:
-            - 8081:8081
-    data-mysql:
-        container_name: data-mysql
+            - 8080:8280
+    mygateway-mysql:
+        container_name: mygateway-mysql
         image: mysql:5.7.13
         environment:
             - MYSQL_USER=root
             - MYSQL_ALLOW_EMPTY_PASSWORD=yes
-            - MYSQL_DATABASE=student_info
+            - MYSQL_DATABASE=mygateway
         command: mysqld --lower_case_table_names=1 --skip-ssl --character_set_server=utf8
     
+    mymicroservice-app:
+        image: mymicroservice
+        external_links:
+            - mymicroservice-mysql:mysql
+        environment:
+            - SPRING_PROFILES_ACTIVE=prod,swagger
+            - SPRING_CLOUD_CONSUL_HOST=consul
+            - SPRING_CLOUD_CONSUL_PORT=8500
+            - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/mymicroservice?useUnicode=true&characterEncoding=utf8&useSSL=false
+            - JHIPSTER_SLEEP=10
+    mymicroservice-mysql:
+        container_name: mymicroservice-mysql
+        image: mysql:5.7.13
+        environment:
+            - MYSQL_USER=root
+            - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+            - MYSQL_DATABASE=mymicroservice
+        command: mysqld --lower_case_table_names=1 --skip-ssl --character_set_server=utf8
+    
+    consul:
+        extends:
+            file: consul.yml
+            service: consul
+    consul-config-loader:
+        extends:
+            file: consul.yml
+            service: consul-config-loader
 
 
