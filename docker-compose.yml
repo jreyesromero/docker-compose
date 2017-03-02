@@ -1,53 +1,47 @@
 version: '2'
 services:
-    mygateway-app:
-        image: mygateway
+    microservicegatewaystudent-app:
+        image: jreyesromero/microservicegatewaystudent
         external_links:
-            - mygateway-mysql:mysql
+            - microservicegatewaystudent-mysql:mysql
+            - jhipster-registry:registry
         environment:
             - SPRING_PROFILES_ACTIVE=prod,swagger
-            - SPRING_CLOUD_CONSUL_HOST=consul
-            - SPRING_CLOUD_CONSUL_PORT=8500
-            - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/mygateway?useUnicode=true&characterEncoding=utf8&useSSL=false
+            - SPRING_CLOUD_CONFIG_URI=http://admin:admin@registry:8761/config
+            - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/microservicegatewaystudent?useUnicode=true&characterEncoding=utf8&useSSL=false
             - SPRING_DATA_CASSANDRA_CONTACTPOINTS=cassandra
             - JHIPSTER_SLEEP=30
         ports:
-            - 8080:8280
-    mygateway-mysql:
-        container_name: mygateway-mysql
+            - 8080:8080
+    microservicegatewaystudent-mysql:
+        container_name: microservicegatewaystudent-mysql
         image: mysql:5.7.13
         environment:
             - MYSQL_USER=root
             - MYSQL_ALLOW_EMPTY_PASSWORD=yes
-            - MYSQL_DATABASE=mygateway
-        command: mysqld --lower_case_table_names=1 --skip-ssl --character_set_server=utf8
+            - MYSQL_DATABASE=microservicegatewaystudent
+        command: mysqld --lower_case_table_names=1 --skip-ssl
     
-    mymicroservice-app:
-        image: mymicroservice
+    microservicesstudent-app:
+        image: jreyesromero/microservicesstudent
         external_links:
-            - mymicroservice-mysql:mysql
+            - microservicesstudent-mysql:mysql
+            - jhipster-registry:registry
         environment:
             - SPRING_PROFILES_ACTIVE=prod,swagger
-            - SPRING_CLOUD_CONSUL_HOST=consul
-            - SPRING_CLOUD_CONSUL_PORT=8500
-            - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/mymicroservice?useUnicode=true&characterEncoding=utf8&useSSL=false
+            - SPRING_CLOUD_CONFIG_URI=http://admin:admin@registry:8761/config
+            - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/microservicesstudent?useUnicode=true&characterEncoding=utf8&useSSL=false
             - JHIPSTER_SLEEP=10
-    mymicroservice-mysql:
-        container_name: mymicroservice-mysql
+    microservicesstudent-mysql:
+        container_name: microservicesstudent-mysql
         image: mysql:5.7.13
         environment:
             - MYSQL_USER=root
             - MYSQL_ALLOW_EMPTY_PASSWORD=yes
-            - MYSQL_DATABASE=mymicroservice
-        command: mysqld --lower_case_table_names=1 --skip-ssl --character_set_server=utf8
+            - MYSQL_DATABASE=microservicesstudent
+        command: mysqld --lower_case_table_names=1 --skip-ssl
     
-    consul:
+    jhipster-registry:
         extends:
-            file: consul.yml
-            service: consul
-    consul-config-loader:
-        extends:
-            file: consul.yml
-            service: consul-config-loader
-
-
+            file: jhipster-registry.yml
+            service: jhipster-registry
